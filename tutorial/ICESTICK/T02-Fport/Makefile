@@ -47,18 +47,18 @@ $(NAME)_tb.vcd: $(NAME).v $(NAME)_tb.v
 $(NAME).bin: $(NAME).pcf $(NAME).v 
 	
 	#-- Sintesis
-	yosys -p "synth_ice40 -blif $(NAME).blif" $(NAME).v
+	yosys -p "synth_ice40 -top $(NAME) -json $(NAME).json" $(NAME).v
 	
 	#-- Place & route
-	arachne-pnr -d 1k -p $(NAME).pcf $(NAME).blif -o $(NAME).txt
+	nextpnr-ice40 --hx1k --json $(NAME).json --pcf $(NAME).pcf --asc $(NAME).asc 
 	
 	#-- Generar binario final, listo para descargar en fgpa
-	icepack $(NAME).txt $(NAME).bin
+	icepack $(NAME).asc $(NAME).bin
 
 
 #-- Limpiar todo
 clean:
-	rm -f *.bin *.txt *.blif *.out *.vcd *~
+	rm -f *.json *.asc *.bin *.txt *.blif *.out *.vcd *~
 
 .PHONY: all clean
 

@@ -40,17 +40,17 @@ setbit_tb.vcd: setbit.v setbit_tb.v
 setbit.bin: setbit.v setbit.pcf
 
 	#-- Sintesis
-	yosys -p "synth_ice40 -blif setbit.blif" setbit.v
+	yosys -p "synth_ice40 -top setbit -json setbit.json" setbit.v
 
 	#-- Place & route
-	arachne-pnr -d 1k -p setbit.pcf setbit.blif -o setbit.txt
+	nextpnr-ice40 --hx1k --json setbit.json --pcf setbit.pcf --asc setbit.asc
 
 	#-- Generar binario final, listo para descargar en fgpa
-	icepack setbit.txt setbit.bin
+	icepack setbit.asc setbit.bin
 
 
 #-- Limpiar todo
 clean:
-	rm -f *.bin *.txt *.blif *.out *.vcd *~
+	rm -f *.json *.bin *.txt *.blif *.out *.vcd *~
 
 .PHONY: all clean
